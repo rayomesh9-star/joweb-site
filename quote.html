@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="quote.css">
 </head>
-<body>
+<body class="page-fade">
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="index.html">JoWeb</a>
@@ -84,6 +84,11 @@
   <button id="backToTop" class="back-to-top" aria-label="Back to top">↑</button>
 
   <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.classList.add('page-fade-in');
+    });
+  </script>
   <div class="modal" id="quoteModal" aria-hidden="true">
     <div class="modal-overlay" data-close></div>
     <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="quoteModalTitle">

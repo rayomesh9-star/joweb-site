@@ -6,7 +6,7 @@
 	<title>JoWeb — Graphic Design, Logistics, Printing & Branding</title>
 	<link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="page-fade">
 	<header class="site-header">
 		<div class="container header-inner">
 			<a class="brand" href="index.html">JoWeb</a>
@@ -128,6 +128,12 @@
 	<button id="backToTop" class="back-to-top" aria-label="Back to top">↑</button>
 
 	<script src="app.js"></script>
+	<script>
+		// Smooth fade-in on page load
+		window.addEventListener('DOMContentLoaded', function() {
+			document.body.classList.add('page-fade-in');
+		});
+	</script>
   
 	<!-- Quote modal (shared) -->
 	<div class="modal" id="quoteModal" aria-hidden="true">

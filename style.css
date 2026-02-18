@@ -1,3 +1,11 @@
+/* Page transition effect */
+.page-fade {
+	opacity: 0;
+	transition: opacity 0.7s cubic-bezier(.4,1,.4,1);
+}
+.page-fade.page-fade-in {
+	opacity: 1;
+}
 :root{
 	--purple-1:#3b0b6f; /* darker base purple */
 	--purple-2:#6f2bd8; /* accent */
@@ -176,8 +184,19 @@ body{
 .footer-about .brand{font-size:1.2rem;margin-bottom:0.3rem;display:inline-block}
 .footer-about p{margin:0.2rem 0 0.5rem 0;color:var(--text-dark)}
 .footer-links{display:flex;flex-direction:column;gap:0.18rem}
-.footer-links a{color:var(--purple-3);text-decoration:none;padding:0.18rem 0;border-radius:6px;transition:color .15s}
-.footer-links a:hover{color:var(--purple-2)}
+.footer-links a{
+	color:var(--purple-3);
+	text-decoration:none;
+	padding:0.18rem 0;
+	border-radius:6px;
+	transition:color .15s, text-decoration .15s, background .15s;
+	position:relative;
+}
+.footer-links a:hover, .footer-links a:focus{
+	color:var(--purple-2);
+	text-decoration:underline;
+	background:rgba(111,43,216,0.06);
+}
 .footer-newsletter form{
 	display:flex;
 	flex-direction:column;
@@ -271,10 +290,26 @@ body{
 }
 
 /* Modal styles */
+/* Modal styles with smooth popup */
 .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1200}
 .modal.show{display:flex}
 .modal-overlay{position:absolute;inset:0;background:rgba(10,8,20,0.45);backdrop-filter:blur(3px)}
-.modal-panel{position:relative;width:min(720px,94%);background:var(--white);border-radius:16px;box-shadow:0 24px 80px rgba(20,10,55,0.12);padding:1.25rem;z-index:2}
+.modal-panel{
+	position:relative;
+	width:min(720px,94%);
+	background:var(--white);
+	border-radius:16px;
+	box-shadow:0 24px 80px rgba(20,10,55,0.12);
+	padding:1.25rem;
+	z-index:2;
+	opacity:0;
+	transform:translateY(32px) scale(0.98);
+	transition:opacity 0.38s cubic-bezier(.4,1,.4,1), transform 0.38s cubic-bezier(.4,1,.4,1);
+}
+.modal.show .modal-panel{
+	opacity:1;
+	transform:translateY(0) scale(1);
+}
 .modal-close{position:absolute;right:12px;top:12px;border:0;background:transparent;font-size:1.25rem;color:var(--purple-3);cursor:pointer}
 .modal-panel h2{margin:0 0 0.5rem;color:var(--purple-3)}
 .modal-panel .form{margin-top:0}
