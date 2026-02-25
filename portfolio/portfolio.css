@@ -1,1 +1,50 @@
 /* Portfolio page specific styles */
+
+.portfolio-card {
+	background: var(--card-bg);
+	padding: 1rem;
+	border-radius: 12px;
+	margin: 0.5rem;
+	box-shadow: 0 2px 8px rgba(42, 8, 63, 0.04);
+	border: 1px solid var(--card-border);
+	transition: box-shadow 0.22s cubic-bezier(0.2, 0.9, 0.2, 1), transform 0.22s cubic-bezier(0.2, 0.9, 0.2, 1), border-color 0.18s;
+}
+
+.portfolio-card:hover,
+.portfolio-card:focus-within {
+	box-shadow: 0 12px 36px rgba(111, 43, 216, 0.13);
+	border-color: var(--purple-2);
+	transform: translateY(-6px) scale(1.025);
+	background: linear-gradient(120deg, #f7f5ff 80%, #ede6ff 100%);
+}
+
+.pc-visual {
+	height: 140px;
+	background: linear-gradient(135deg, var(--purple-1), var(--purple-2));
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--white);
+	border-radius: 10px;
+	margin-bottom: 0.75rem;
+}
+
+.portfolio-card h3 {
+	margin: 0.5rem 0;
+	color: var(--purple-1);
+}
+
+.portfolio-card p {
+	margin: 0.3rem 0;
+	color: var(--text-dark);
+	font-size: 0.95rem;
+}
+
+@media (max-width: 480px) {
+	.pc-visual {
+		height: 110px;
+	}
+	.portfolio-grid.large {
+		grid-template-columns: 1fr;
+	}
+}

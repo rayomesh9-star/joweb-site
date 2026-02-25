@@ -6,11 +6,6 @@
   <title>Get a Quote — Joeweb Graphics</title>
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="quote.css">
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      document.body.classList.add('page-fade-in');
-    });
-  </script>
 </head>
 <body class="page-fade">
   <header class="site-header">
@@ -55,16 +50,16 @@
     <div class="container">
       <div class="footer-top">
         <div class="footer-col footer-about">
-          <a class="brand" href="../index.html"><img src="../images/Joweb Ltd Logo.svg" alt="Joeweb Graphics Logo" style="height:32px"></a>
+          <a class="brand" href="index.html">Joeweb Graphics</a>
           <p>Design • Logistics • Printing</p>
         </div>
         <div class="footer-col footer-links">
           <h4>Quick Links</h4>
-          <a href="../index.html">Home</a>
-          <a href="../services/index.html">Services</a>
-          <a href="../portfolio/index.html">Portfolio</a>
-          <a href="../about/index.html">About</a>
-          <a href="../contact/index.html">Contact</a>
+          <a href="index.html">Home</a>
+          <a href="services.html">Services</a>
+          <a href="portfolio.html">Portfolio</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
         </div>
         <div class="footer-col footer-newsletter">
           <h4>Get updates &amp; Quote</h4>
@@ -90,6 +85,9 @@
 
   <script src="../app.js"></script>
   <script src="quote.js"></script>
+<script>
+  document.body.classList.add('page-fade-in');
+</script>
   <div class="modal" id="quoteModal" aria-hidden="true">
     <div class="modal-overlay" data-close></div>
     <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="quoteModalTitle">
@@ -99,13 +97,13 @@
         <label>Service
           <select name="service">
             <option>Graphic Design</option>
-            <option>Logistics &amp; Transportation</option>
+          <a class="btn open-quote" href="quote/quote.html">Get a Quote</a>
             <option>Printing &amp; Branding</option>
           </select>
         </label>
         <label>Full name <input name="name" required></label>
         <label>Email <input name="email" type="email" required></label>
-        <label>Project details <textarea name="details" rows="4"></textarea></label>
+    <script src="quote/quote.js"></script>
         <div class="form-actions">
           <button class="btn" type="submit">Request Quote</button>
         </div>

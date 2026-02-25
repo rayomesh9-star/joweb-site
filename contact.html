@@ -6,13 +6,16 @@
   <title>Contact — Joeweb Graphics</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="contact.css">
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    <link rel="stylesheet" href="contact/contact.css">
-    });
-    <script src="contact/contact.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'contact/contact.css';
+    document.head.appendChild(link);
+  });
 </script>
-  <script src="contact.js"></script>
+<script src="contact/contact.js"></script>
+<script src="contact.js"></script>
 </head>
 <body class="page-fade">
   <header class="site-header">

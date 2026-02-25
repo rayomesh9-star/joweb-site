@@ -1,6 +1,8 @@
 // services.js - page-specific JS for Services
 // Add custom interactivity for services page here
 
+// Example: Highlight service cards on scroll
+
 document.addEventListener('DOMContentLoaded', function() {
   var cards = document.querySelectorAll('.service');
   if(cards.length) {

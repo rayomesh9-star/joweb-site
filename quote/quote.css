@@ -1,1 +1,15 @@
 /* Quote page specific styles */
+
+.container {
+	max-width: 720px;
+}
+
+.quote-form {
+	margin-top: 2rem;
+}
+
+@media (max-width: 600px) {
+	.container {
+		padding: 1rem;
+	}
+}
