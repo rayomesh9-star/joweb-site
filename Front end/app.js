@@ -86,12 +86,29 @@ function handleContactSubmit(e){
 	// Simulate send and disable submit button for accessibility
 	var submit = form.querySelector('button[type="submit"]') || form.querySelector('.btn');
 	if(submit) { submit.disabled = true; submit.setAttribute('aria-busy','true'); }
-	msg.textContent = 'Sending…';
-	setTimeout(function(){
-		msg.textContent = 'Thank you, ' + name.split(' ')[0] + '! We received your message.';
-		form.reset();
-		if(submit) { submit.disabled = false; submit.removeAttribute('aria-busy'); }
-	},900);
+	 msg.textContent = 'Sending…';
+	 fetch('/api/contact', {
+	 	 method: 'POST',
+	 	 headers: {'Content-Type':'application/json'},
+	 	 body: JSON.stringify({name:name, email:email, message:message}),
+	 	 signal: AbortSignal.timeout(5000)
+	 })
+	 .then(function(res){ return res.json(); })
+	 .then(function(data){
+	 	 if(data && data.error){
+	 	 	 msg.textContent = data.error;
+	 	 } else {
+	 	 	 msg.textContent = 'Thank you, ' + name.split(' ')[0] + '! We received your message.';
+	 	 	 form.reset();
+	 	 }
+	 })
+	 .catch(function(){
+	 	 // leave previous message or silently fail if network error occurs
+	 	 console.warn('Fetch failed for contact form');
+	 })
+	 .finally(function(){
+	 	 if(submit) { submit.disabled = false; submit.removeAttribute('aria-busy'); }
+	 });
 }
 
 function handleQuoteSubmit(e){
@@ -107,12 +124,28 @@ function handleQuoteSubmit(e){
 	}
 	var submit = form.querySelector('button[type="submit"]') || form.querySelector('.btn');
 	if(submit) { submit.disabled = true; submit.setAttribute('aria-busy','true'); }
-	msg.textContent = 'Submitting request…';
-	setTimeout(function(){
-		msg.innerHTML = 'Thanks, <strong>' + (name.split(' ')[0]||name) + '</strong>! We will email a quote to <em>' + email + '</em> soon.';
-		form.reset();
-		if(submit) { submit.disabled = false; submit.removeAttribute('aria-busy'); }
-	},1000);
+	 msg.textContent = 'Submitting request…';
+	 fetch('/api/quote', {
+	 	 method: 'POST',
+	 	 headers: {'Content-Type':'application/json'},
+	 	 body: JSON.stringify({name:name, email:email, service: form.service ? form.service.value : '', details: form.details ? form.details.value : '', budget: form.budget ? form.budget.value : ''}),
+	 	 signal: AbortSignal.timeout(5000)
+	 })
+	 .then(function(res){ return res.json(); })
+	 .then(function(data){
+	 	 if(data && data.error){
+	 	 	 msg.textContent = data.error;
+	 	 } else {
+	 	 	 msg.innerHTML = 'Thanks, <strong>' + (name.split(' ')[0]||name) + '</strong>! We will email a quote to <em>' + email + '</em> soon.';
+	 	 	 form.reset();
+	 	 }
+	 })
+	 .catch(function(){
+	 	 console.warn('Fetch failed for quote form');
+	 })
+	 .finally(function(){
+	 	 if(submit) { submit.disabled = false; submit.removeAttribute('aria-busy'); }
+	 });
 }
 
 // Modal-specific submit handler
@@ -127,14 +160,30 @@ function handleModalQuoteSubmit(e){
 	if(!name || !email){ msg.textContent = 'Please include your name and email.'; return; }
 	var submit = form.querySelector('button[type="submit"]');
 	if(submit){ submit.disabled = true; submit.setAttribute('aria-busy','true'); }
-	msg.textContent = 'Submitting request…';
-	setTimeout(function(){
-		msg.innerHTML = 'Thanks, <strong>' + (name.split(' ')[0]||name) + '</strong>! We will email a quote to <em>' + email + '</em> soon.';
-		form.reset();
-		if(submit){ submit.disabled = false; submit.removeAttribute('aria-busy'); }
-		// Optionally close modal after a moment
-		setTimeout(closeQuoteModal, 1200);
-	},900);
+	 msg.textContent = 'Submitting request…';
+	 fetch('/api/quote', {
+	 	 method: 'POST',
+	 	 headers: {'Content-Type':'application/json'},
+	 	 body: JSON.stringify({name:name, email:email, service: form.service ? form.service.value : '', details: form.details ? form.details.value : '', budget: form.budget ? form.budget.value : ''}),
+	 	 signal: AbortSignal.timeout(5000)
+	 })
+	 .then(function(res){ return res.json(); })
+	 .then(function(data){
+	 	 if(data && data.error){
+	 	 	 msg.textContent = data.error;
+	 	 } else {
+	 	 	 msg.innerHTML = 'Thanks, <strong>' + (name.split(' ')[0]||name) + '</strong>! We will email a quote to <em>' + email + '</em> soon.';
+	 	 	 form.reset();
+	 	 	 // Optionally close modal after a moment
+	 	 	 setTimeout(closeQuoteModal, 1200);
+	 	 }
+	 })
+	 .catch(function(){
+	 	 console.warn('Fetch failed for modal quote form');
+	 })
+	 .finally(function(){
+	 	 if(submit){ submit.disabled = false; submit.removeAttribute('aria-busy'); }
+	 });
 }
 
 function handleNewsletterSubmit(e){
@@ -154,4 +203,3 @@ function handleNewsletterSubmit(e){
 		if(submit){ submit.disabled = false; submit.removeAttribute('aria-busy'); }
 	},900);
 }
-
