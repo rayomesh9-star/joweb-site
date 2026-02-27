@@ -4,6 +4,10 @@ const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+// Bind host for the Express server. Set HOST to the hostname/interface to bind to (e.g. '0.0.0.0' or '127.0.0.1').
+const HOST = process.env.HOST || '0.0.0.0';
+// PUBLIC_HOST is only used for logging/URLs. Set it to the public hostname you want displayed (e.g. 'jowebgraphics').
+const PUBLIC_HOST = process.env.PUBLIC_HOST || 'joewebgraphics';
 
 app.use(express.json());
 
@@ -50,6 +54,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(staticDir, 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`Backend server running at http://localhost:${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Backend server running at http://${PUBLIC_HOST}:${PORT}`);
 });
