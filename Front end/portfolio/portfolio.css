@@ -45,6 +45,6 @@
 		height: 110px;
 	}
 	.portfolio-grid.large {
-		grid-template-columns: 1fr;
+		grid-template-columns: 2fr;
 	}
 }
