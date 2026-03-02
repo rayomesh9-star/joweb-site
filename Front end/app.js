@@ -98,8 +98,10 @@ function handleContactSubmit(e){
 	 	 if(data && data.error){
 	 	 	 msg.textContent = data.error;
 	 	 } else {
-	 	 	 msg.textContent = 'Thank you, ' + name.split(' ')[0] + '! We received your message.';
-	 	 	 form.reset();
+		 	 	 msg.textContent = 'Thank you, ' + name.split(' ')[0] + '! We received your message.';
+		 	 	 form.reset();
+		 	 	 // after a successful submission, refresh log data so user can see what was stored
+		 	 	 fetchLogs();
 	 	 }
 	 })
 	 .catch(function(){
@@ -138,6 +140,7 @@ function handleQuoteSubmit(e){
 	 	 } else {
 	 	 	 msg.innerHTML = 'Thanks, <strong>' + (name.split(' ')[0]||name) + '</strong>! We will email a quote to <em>' + email + '</em> soon.';
 	 	 	 form.reset();
+		 	 	 fetchLogs();
 	 	 }
 	 })
 	 .catch(function(){
@@ -176,6 +179,7 @@ function handleModalQuoteSubmit(e){
 	 	 	 form.reset();
 	 	 	 // Optionally close modal after a moment
 	 	 	 setTimeout(closeQuoteModal, 1200);
+		 	 	 fetchLogs();
 	 	 }
 	 })
 	 .catch(function(){
@@ -202,4 +206,32 @@ function handleNewsletterSubmit(e){
 		form.reset();
 		if(submit){ submit.disabled = false; submit.removeAttribute('aria-busy'); }
 	},900);
+}
+
+// fetch and display log entries (for debugging or verification)
+function fetchLogs(){
+	fetch('/api/logs')
+		.then(res => res.json())
+		.then(data => {
+			// simply log to console; could be enhanced to show in UI
+			console.group('Server logs');
+			console.log('Contacts:', data.contacts);
+			console.log('Quotes:', data.quotes);
+			console.groupEnd();
+			// show logs in a debug area if present
+			var dbg = document.getElementById('logData');
+			if(!dbg){
+				dbg = document.createElement('pre');
+				dbg.id = 'logData';
+				dbg.style.background = '#f0f0f0';
+				dbg.style.padding = '10px';
+				dbg.style.margin = '20px';
+				dbg.style.overflowX = 'auto';
+				document.body.appendChild(dbg);
+			}
+			dbg.textContent = JSON.stringify(data, null, 2);
+		})
+		.catch(err => {
+			console.warn('Unable to fetch logs', err);
+		});
 }
