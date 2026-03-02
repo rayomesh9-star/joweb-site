@@ -1,80 +1,68 @@
-// SQLite via sql.js (WebAssembly) - pure JS, no native build required
-// database file will be stored as data.sqlite in this directory
+// Simple JSON-based data store
+// Data is saved to data.json on disk for persistence
 const fs = require('fs');
 const path = require('path');
-const initSqlJs = require('sql.js');
 
-const dbPath = path.join(__dirname, 'data.sqlite');
-let db;
+const dbPath = path.join(__dirname, 'data.json');
 
-// Initialize database, returning a promise that resolves when ready
-async function init() {
-  const SQL = await initSqlJs({ locateFile: file => path.join(__dirname, 'node_modules', 'sql.js', 'dist', file) });
+let data = {
+  contacts: [],
+  quotes: []
+};
+
+// Load data from file if it exists
+function load() {
   if (fs.existsSync(dbPath)) {
-    const filebuffer = fs.readFileSync(dbPath);
-    db = new SQL.Database(filebuffer);
-  } else {
-    db = new SQL.Database();
-    db.run(`
-      CREATE TABLE contacts (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        email TEXT NOT NULL,
-        message TEXT NOT NULL,
-        ts TEXT NOT NULL
-      );
-      CREATE TABLE quotes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        email TEXT NOT NULL,
-        service TEXT,
-        details TEXT,
-        budget TEXT,
-        ts TEXT NOT NULL
-      );
-    `);
-    save();
+    try {
+      const fileContent = fs.readFileSync(dbPath, 'utf-8');
+      data = JSON.parse(fileContent);
+    } catch (err) {
+      console.warn('Failed to load data.json:', err.message);
+    }
   }
 }
 
+// Save data to file
 function save() {
-  if (!db) return;
-  const data = db.export();
-  fs.writeFileSync(dbPath, Buffer.from(data));
+  try {
+    fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.error('Failed to save data:', err);
+  }
+}
+
+// Initialize (async but non-blocking)
+async function init() {
+  load();
+  console.log('Data store initialized');
 }
 
 function insertContact(entry) {
-  if (!db) return;
-  const stmt = db.prepare('INSERT INTO contacts (name,email,message,ts) VALUES (?,?,?,?)');
-  stmt.run([entry.name, entry.email, entry.message, entry.ts]);
+  const contact = {
+    id: data.contacts.length + 1,
+    ...entry
+  };
+  data.contacts.push(contact);
   save();
+  return contact;
 }
 
 function insertQuote(entry) {
-  if (!db) return;
-  const stmt = db.prepare('INSERT INTO quotes (name,email,service,details,budget,ts) VALUES (?,?,?,?,?,?)');
-  stmt.run([entry.name, entry.email, entry.service || '', entry.details || '', entry.budget || '', entry.ts]);
+  const quote = {
+    id: data.quotes.length + 1,
+    ...entry
+  };
+  data.quotes.push(quote);
   save();
+  return quote;
 }
 
 function getContacts() {
-  if (!db) return [];
-  const stmt = db.prepare('SELECT id,name,email,message,ts FROM contacts ORDER BY id DESC');
-  const arr = [];
-  while (stmt.step()) {
-    arr.push(stmt.getAsObject());
-  }
-  return arr;
+  return data.contacts.slice().reverse();  // most recent first
 }
 
 function getQuotes() {
-  if (!db) return [];
-  const stmt = db.prepare('SELECT id,name,email,service,details,budget,ts FROM quotes ORDER BY id DESC');
-  const arr = [];
-  while (stmt.step()) {
-    arr.push(stmt.getAsObject());
-  }
-  return arr;
+  return data.quotes.slice().reverse();  // most recent first
 }
 
 module.exports = {

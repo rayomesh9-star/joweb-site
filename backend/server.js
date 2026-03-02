@@ -4,9 +4,11 @@ const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-// Bind host for the Express server. Set HOST to the hostname/interface to bind to (e.g. '0.0.0.0' or '127.0.0.1').
+// Bind host for the Express server. Set HOST to the hostname/interface to bind to
+// (e.g. '0.0.0.0' or '127.0.0.1').
 const HOST = process.env.HOST || '0.0.0.0';
-// PUBLIC_HOST is only used for logging/URLs. Set it to the public hostname you want displayed (e.g. 'jowebgraphics').
+// PUBLIC_HOST is only used for logging/URLs. Set it to the public hostname you
+// want displayed (e.g. 'joewebgraphics').
 const PUBLIC_HOST = process.env.PUBLIC_HOST || 'joewebgraphics';
 
 app.use(express.json());
@@ -23,12 +25,14 @@ function appendEntry(file, entry) {
   });
 }
 
-// Use SQLite DB (better-sqlite3) for persistent structured storage
+// Data store module -- may be backed by SQLite or a simple JSON file.
+// (older commits referred to it as the "SQLite DB", hence some log messages
+// still mention SQLite even though the current implementation is file-based).
 let dbModule;
 try {
   dbModule = require('./db');
 } catch (e) {
-  console.warn('SQLite DB module not available:', e && e.message);
+  console.warn('database module not available:', e && e.message);
   dbModule = null;
 }
 
@@ -43,9 +47,9 @@ app.post('/api/contact', (req, res) => {
   // Write to file in background (non-blocking)
   const entry = { name, email, message, ts: new Date().toISOString() };
   appendEntry(path.join(__dirname, 'contacts.log'), entry);
-  // Also insert into DB if available
-  if (db && db.insertContact) {
-    try { db.insertContact({ name: entry.name, email: entry.email, message: entry.message, ts: entry.ts }); }
+  // Also insert into persistent store if available
+  if (dbModule && dbModule.insertContact) {
+    try { dbModule.insertContact({ name: entry.name, email: entry.email, message: entry.message, ts: entry.ts }); }
     catch (err) { console.error('DB insertContact failed', err); }
   }
 });
@@ -61,20 +65,20 @@ app.post('/api/quote', (req, res) => {
   // Write to file in background (non-blocking)
   const entry = { name, email, service, details, budget, ts: new Date().toISOString() };
   appendEntry(path.join(__dirname, 'quotes.log'), entry);
-  // Also insert into DB if available
-  if (db && db.insertQuote) {
-    try { db.insertQuote({ name: entry.name, email: entry.email, service: entry.service, details: entry.details, budget: entry.budget, ts: entry.ts }); }
+  // Also insert into persistent store if available
+  if (dbModule && dbModule.insertQuote) {
+    try { dbModule.insertQuote({ name: entry.name, email: entry.email, service: entry.service, details: entry.details, budget: entry.budget, ts: entry.ts }); }
     catch (err) { console.error('DB insertQuote failed', err); }
   }
 });
 
 // Admin endpoint: GET /api/logs - return contacts and quotes as JSON
 app.get('/api/logs', (req, res) => {
-  // Prefer the DB if available
-  if (db && db.getContacts && db.getQuotes) {
+  // Prefer the persistent store if available
+  if (dbModule && dbModule.getContacts && dbModule.getQuotes) {
     try {
-      const contacts = db.getContacts();
-      const quotes = db.getQuotes();
+      const contacts = dbModule.getContacts();
+      const quotes = dbModule.getQuotes();
       return res.json({ contacts, quotes, total: { contacts: contacts.length, quotes: quotes.length } });
     } catch (err) {
       console.error('DB read failed', err);
@@ -378,14 +382,28 @@ async function start() {
   if (dbModule && dbModule.init) {
     try {
       await dbModule.init();
-      console.log('SQLite database initialized');
+      console.log('data store initialized');
     } catch (err) {
       console.error('Failed to init DB', err);
     }
   }
-  app.listen(PORT, HOST, () => {
-    console.log(`Backend server running at http://${PUBLIC_HOST}:${PORT}`);
+  const server = app.listen(PORT, HOST, () => {
+    console.log(`Backend server listening on http://${PUBLIC_HOST}:${PORT}`);
+  });
+  server.on('error', (err) => {
+    console.error('Server error:', err);
   });
 }
 
-start();
+start().catch(err => console.error('Start error:', err));
+
+// notify on unexpected process events so they show up in logs
+process.on('uncaughtException', (err) => {
+  console.error('uncaughtException', err);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('unhandledRejection', reason);
+});
+process.on('exit', (code) => {
+  console.log('process exiting with code', code);
+});

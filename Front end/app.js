@@ -53,6 +53,9 @@ document.addEventListener('DOMContentLoaded',function(){
 	// Newsletter handler (footer)
 	var newsletterForm = document.getElementById('newsletterForm');
 	if(newsletterForm) newsletterForm.addEventListener('submit', handleNewsletterSubmit);
+
+	// Fetch existing logs on page load so stored submissions are visible immediately
+	fetchLogs();
 });
 
 function openQuoteModal(){
@@ -205,6 +208,8 @@ function handleNewsletterSubmit(e){
 		msg.textContent = 'Subscribed — thanks!';
 		form.reset();
 		if(submit){ submit.disabled = false; submit.removeAttribute('aria-busy'); }
+		// Refresh logs so the new subscription (if stored elsewhere) is visible
+		fetchLogs();
 	},900);
 }
 
