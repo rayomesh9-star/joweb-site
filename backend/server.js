@@ -23,6 +23,15 @@ function appendEntry(file, entry) {
   });
 }
 
+// Use SQLite DB (better-sqlite3) for persistent structured storage
+let dbModule;
+try {
+  dbModule = require('./db');
+} catch (e) {
+  console.warn('SQLite DB module not available:', e && e.message);
+  dbModule = null;
+}
+
 // Contact endpoint - respond immediately, write async
 app.post('/api/contact', (req, res) => {
   const { name, email, message } = req.body;
@@ -34,6 +43,11 @@ app.post('/api/contact', (req, res) => {
   // Write to file in background (non-blocking)
   const entry = { name, email, message, ts: new Date().toISOString() };
   appendEntry(path.join(__dirname, 'contacts.log'), entry);
+  // Also insert into DB if available
+  if (db && db.insertContact) {
+    try { db.insertContact({ name: entry.name, email: entry.email, message: entry.message, ts: entry.ts }); }
+    catch (err) { console.error('DB insertContact failed', err); }
+  }
 });
 
 // Quote endpoint - respond immediately, write async
@@ -47,10 +61,28 @@ app.post('/api/quote', (req, res) => {
   // Write to file in background (non-blocking)
   const entry = { name, email, service, details, budget, ts: new Date().toISOString() };
   appendEntry(path.join(__dirname, 'quotes.log'), entry);
+  // Also insert into DB if available
+  if (db && db.insertQuote) {
+    try { db.insertQuote({ name: entry.name, email: entry.email, service: entry.service, details: entry.details, budget: entry.budget, ts: entry.ts }); }
+    catch (err) { console.error('DB insertQuote failed', err); }
+  }
 });
 
 // Admin endpoint: GET /api/logs - return contacts and quotes as JSON
 app.get('/api/logs', (req, res) => {
+  // Prefer the DB if available
+  if (db && db.getContacts && db.getQuotes) {
+    try {
+      const contacts = db.getContacts();
+      const quotes = db.getQuotes();
+      return res.json({ contacts, quotes, total: { contacts: contacts.length, quotes: quotes.length } });
+    } catch (err) {
+      console.error('DB read failed', err);
+      // fallthrough to file-based read
+    }
+  }
+
+  // Fallback to file-based logs
   const contactsFile = path.join(__dirname, 'contacts.log');
   const quotesFile = path.join(__dirname, 'quotes.log');
   
@@ -74,25 +106,26 @@ app.get('/api/logs', (req, res) => {
 
 // Admin endpoint: GET /api/logs/export/contacts - download contacts as CSV
 app.get('/api/logs/export/contacts', (req, res) => {
-  const contactsFile = path.join(__dirname, 'contacts.log');
-  if (!fs.existsSync(contactsFile)) {
-    return res.status(404).json({ error: 'No contact logs found' });
+  let entries = [];
+  if (dbModule && dbModule.getContacts) {
+    try { entries = dbModule.getContacts(); }
+    catch (err) { console.error('DB getContacts failed', err); entries = []; }
   }
-  
-  const entries = fs.readFileSync(contactsFile, 'utf-8')
-    .split('\n')
-    .filter(line => line.trim())
-    .map(line => JSON.parse(line));
-  
+  if (entries.length === 0) {
+    const contactsFile = path.join(__dirname, 'contacts.log');
+    if (fs.existsSync(contactsFile)) {
+      entries = fs.readFileSync(contactsFile, 'utf-8')
+        .split('\n')
+        .filter(line => line.trim())
+        .map(line => JSON.parse(line));
+    }
+  }
   if (entries.length === 0) {
     return res.status(404).json({ error: 'No contact entries' });
   }
-  
-  // Convert to CSV
-  const headers = ['name', 'email', 'message', 'timestamp'];
-  const rows = entries.map(e => [e.name, e.email, `"${e.message.replace(/"/g, '""')}"`, e.ts]);
+  const headers = ['id','name', 'email', 'message', 'timestamp'];
+  const rows = entries.map(e => [e.id||'', e.name, e.email, `"${(e.message||'').replace(/"/g, '""')}"`, e.ts]);
   const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-  
   res.setHeader('Content-Type', 'text/csv');
   res.setHeader('Content-Disposition', 'attachment; filename=contacts.csv');
   res.send(csv);
@@ -100,25 +133,26 @@ app.get('/api/logs/export/contacts', (req, res) => {
 
 // Admin endpoint: GET /api/logs/export/quotes - download quotes as CSV
 app.get('/api/logs/export/quotes', (req, res) => {
-  const quotesFile = path.join(__dirname, 'quotes.log');
-  if (!fs.existsSync(quotesFile)) {
-    return res.status(404).json({ error: 'No quote logs found' });
+  let entries = [];
+  if (dbModule && dbModule.getQuotes) {
+    try { entries = dbModule.getQuotes(); }
+    catch (err) { console.error('DB getQuotes failed', err); entries = []; }
   }
-  
-  const entries = fs.readFileSync(quotesFile, 'utf-8')
-    .split('\n')
-    .filter(line => line.trim())
-    .map(line => JSON.parse(line));
-  
+  if (entries.length === 0) {
+    const quotesFile = path.join(__dirname, 'quotes.log');
+    if (fs.existsSync(quotesFile)) {
+      entries = fs.readFileSync(quotesFile, 'utf-8')
+        .split('\n')
+        .filter(line => line.trim())
+        .map(line => JSON.parse(line));
+    }
+  }
   if (entries.length === 0) {
     return res.status(404).json({ error: 'No quote entries' });
   }
-  
-  // Convert to CSV
-  const headers = ['name', 'email', 'service', 'details', 'budget', 'timestamp'];
-  const rows = entries.map(e => [e.name, e.email, e.service || '', `"${(e.details || '').replace(/"/g, '""')}"`, e.budget || '', e.ts]);
+  const headers = ['id','name', 'email', 'service', 'details', 'budget', 'timestamp'];
+  const rows = entries.map(e => [e.id||'', e.name, e.email, e.service || '', `"${(e.details || '').replace(/"/g, '""')}"`, e.budget || '', e.ts]);
   const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-  
   res.setHeader('Content-Type', 'text/csv');
   res.setHeader('Content-Disposition', 'attachment; filename=quotes.csv');
   res.send(csv);
@@ -339,6 +373,19 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(staticDir, 'index.html'));
 });
 
-app.listen(PORT, HOST, () => {
-  console.log(`Backend server running at http://${PUBLIC_HOST}:${PORT}`);
-});
+// start the server after database initialized (if possible)
+async function start() {
+  if (dbModule && dbModule.init) {
+    try {
+      await dbModule.init();
+      console.log('SQLite database initialized');
+    } catch (err) {
+      console.error('Failed to init DB', err);
+    }
+  }
+  app.listen(PORT, HOST, () => {
+    console.log(`Backend server running at http://${PUBLIC_HOST}:${PORT}`);
+  });
+}
+
+start();

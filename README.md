@@ -32,7 +32,7 @@ Open PowerShell and run:
 
 ```powershell
 cd "c:\Users\Administrator\Joweb-webites\backend"
-npm.cmd install
+npm.cmd install    # installs express + sql.js for the embedded SQLite database
 ```
 
 ## 3) Start the backend using the provided helper script
@@ -60,5 +60,13 @@ Visit `http://jowebgraphics:3000` in your browser. The front-end uses relative A
 ## Notes
 - If you want the site to be available without a port number, run on port `80` (may require elevated privileges) or put a reverse proxy (nginx/Caddy) in front.
 - For production, create a real DNS A record pointing to your public IP and set `PUBLIC_HOST` to the real domain.
+- **Database**: submissions are stored in `backend/data.sqlite` using [sql.js](https://www.npmjs.com/package/sql.js). You can inspect it with any SQLite viewer or the `sqlite3` CLI:
+	```powershell
+	sqlite3 backend\data.sqlite
+	sqlite> .tables
+	sqlite> SELECT * FROM contacts;
+	sqlite> SELECT * FROM quotes;
+	```
+	(alternatively the web dashboard and `view-logs.ps1` both read from the database automatically)
 
 If you want, I can also add a `.bat` variant or a `start-local` npm script — tell me which you prefer.
