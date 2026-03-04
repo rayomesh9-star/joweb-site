@@ -8,6 +8,8 @@
 	box-shadow: 0 2px 8px rgba(42, 8, 63, 0.04);
 	border: 1px solid var(--card-border);
 	transition: box-shadow 0.22s cubic-bezier(0.2, 0.9, 0.2, 1), transform 0.22s cubic-bezier(0.2, 0.9, 0.2, 1), border-color 0.18s;
+	cursor: pointer;
+	user-select: none;
 }
 
 .portfolio-card:hover,
@@ -16,6 +18,20 @@
 	border-color: var(--purple-2);
 	transform: translateY(-6px) scale(1.025);
 	background: linear-gradient(120deg, #f7f5ff 80%, #ede6ff 100%);
+}
+
+.portfolio-read-more {
+	display: inline-block;
+	margin-top: 0.75rem;
+	color: var(--purple-2);
+	font-weight: 600;
+	font-size: 0.95rem;
+	opacity: 0.7;
+	transition: opacity 0.22s;
+}
+
+.portfolio-card:hover .portfolio-read-more {
+	opacity: 1;
 }
 
 .pc-visual {
@@ -40,11 +56,53 @@
 	font-size: 0.95rem;
 }
 
+.project-modal-content {
+	max-height: 60vh;
+	overflow-y: auto;
+}
+
+.project-modal-content h3 {
+	color: var(--purple-1);
+	margin: 1.5rem 0 0.75rem 0;
+}
+
+.project-modal-content img {
+	width: 100%;
+	border-radius: 8px;
+	margin: 1rem 0;
+	max-height: 300px;
+	object-fit: cover;
+}
+
+.project-modal-content ul {
+	margin: 0.5rem 0 0.5rem 1.5rem;
+	list-style: disc;
+}
+
+.project-modal-content li {
+	margin: 0.3rem 0;
+	color: var(--text-dark);
+}
+
+.modal-actions {
+	display: flex;
+	gap: 1rem;
+	margin-top: 1.5rem;
+	justify-content: flex-end;
+}
+
+.modal-actions .btn {
+	padding: 0.75rem 1.5rem;
+}
+
 @media (max-width: 480px) {
 	.pc-visual {
 		height: 110px;
 	}
 	.portfolio-grid.large {
 		grid-template-columns: 2fr;
+	}
+	.project-modal-content {
+		max-height: 50vh;
 	}
 }

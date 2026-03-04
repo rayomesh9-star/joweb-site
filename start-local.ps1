@@ -3,7 +3,7 @@
 
 # Adjust these values if needed
 $hostBind = '0.0.0.0'
-$publicHost = 'jowebgraphics'
+$publicHost = 'www.joewebgraphics.com'
 $port = '3000'
 
 Write-Host "Starting backend with PUBLIC_HOST=$publicHost on port $port (bind $hostBind)"

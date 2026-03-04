@@ -5,6 +5,8 @@
 }
 .page-fade.page-fade-in {
 	opacity: 1;
+}.page-fade.page-fade-in {
+	opacity: 1;
 }
 :root{
 	--purple-1:#3b0b6f; /* darker base purple */
@@ -83,7 +85,8 @@ body{
 }
 .site-nav a.btn:active{transform:translateY(-1px) scale(0.995)}
 .site-nav a.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.12)}
-.nav-toggle{display:none;background:transparent;border:0;color:var(--white);font-size:1.15rem;padding:6px 8px}
+.nav-toggle{display:none;background:transparent;border:0;color:var(--purple-3);font-size:1.15rem;padding:6px 8px;cursor:pointer;transition:transform 0.22s, color 0.22s}
+.nav-toggle:hover{color:var(--purple-2);transform:scale(1.08)}
 
 /* Hero */
 .hero{padding:4.5rem 0;background:linear-gradient(135deg, rgba(111,43,216,0.03) 0%, rgba(111,43,216,0.01) 100%)}
@@ -292,11 +295,20 @@ body{
 		padding:0.75rem;
 		border-radius:16px;
 		flex-direction:column;
-		display:none;
+		display:flex;
 		min-width:200px;
 		z-index:200;
+		max-height:0;
+		overflow:hidden;
+		opacity:0;
+		transition:max-height 0.35s cubic-bezier(0.2, 0.9, 0.2, 1), opacity 0.35s ease, transform 0.35s cubic-bezier(0.2, 0.9, 0.2, 1);
+		transform:translateY(-10px);
 	}
-	.site-nav.show{display:flex}
+	.site-nav.show{
+		max-height:600px;
+		opacity:1;
+		transform:translateY(0);
+	}
 	.header-inner{position:relative}
 	.site-nav a{padding:0.9rem 1.1rem}
 	.site-nav a.btn{width:100%;text-align:center;border-radius:14px}

@@ -32,32 +32,42 @@
 
   <main class="container">
     <h1>Portfolio</h1>
-    <p>Selected projects across branding, print and cargo solutions.</p>
     <div class="portfolio-grid large">
-      <div class="portfolio-card"> 
+      <div class="portfolio-card" data-project-id="retail-rebrand"> 
         <img class="portfolio-image" src="../images/ba2.jpg" alt="Retail rebrand visuals">
         <h3>Retail Rebrand</h3>
         <p>Logo, packaging and in-store signage.</p>
+        <span class="portfolio-read-more">View Details →</span>
       </div>
-      <div class="portfolio-card"> 
+      <div class="portfolio-card" data-project-id="supply-chain"> 
         <img class="portfolio-image" src="../images/ba3.jpg" alt="Logistics optimization visuals">
         <h3>Supply Chain Optimization</h3>
         <p>Transport network redesign for faster delivery.</p>
+        <span class="portfolio-read-more">View Details →</span>
       </div>
-      <div class="portfolio-card"> 
+      <div class="portfolio-card" data-project-id="trade-show"> 
         <img class="portfolio-image" src="../images/ba4.jpg" alt="Printed collateral visuals">
         <h3>Trade Show Collateral</h3>
         <p>Banners, brochures and promotional materials.</p>
+        <span class="portfolio-read-more">View Details →</span>
       </div>
-      <div class="portfolio-card"> 
-        <img class="portfolio-image" src="../images/ba4.jpg" alt="Printed collateral visuals">
-        <h3>Trade Show Collateral</h3>
-        <p>Banners, brochures and promotional materials.</p>
+      <div class="portfolio-card" data-project-id="corporate-identity"> 
+        <img class="portfolio-image" src="../images/ba4.jpg" alt="Corporate identity design">
+        <h3>Corporate Identity</h3>
+        <p>Complete brand identity system and guidelines.</p>
+        <span class="portfolio-read-more">View Details →</span>
       </div>
-      <div class="portfolio-card"> 
-        <img class="portfolio-image" src="../images/ba4.jpg" alt="Printed collateral visuals">
-        <h3>Trade Show Collateral</h3>
-        <p>Banners, brochures and promotional materials.</p>
+      <div class="portfolio-card" data-project-id="packaging-design"> 
+        <img class="portfolio-image" src="../images/ba4.jpg" alt="Product packaging design">
+        <h3>Packaging Design</h3>
+        <p>Custom packaging solutions for e-commerce brand.</p>
+        <span class="portfolio-read-more">View Details →</span>
+      </div>
+      <div class="portfolio-card" data-project-id="digital-campaign"> 
+        <img class="portfolio-image" src="../images/ba4.jpg" alt="Digital marketing campaign">
+        <h3>Digital Campaign</h3>
+        <p>Integrated marketing materials and digital assets.</p>
+        <span class="portfolio-read-more">View Details →</span>
       </div>
     </div>
     
@@ -101,6 +111,18 @@
   <button id="backToTop" class="back-to-top" aria-label="Back to top">↑</button>
 
   <script src="../app.js"></script>
+  <div class="modal" id="projectModal" aria-hidden="true">
+    <div class="modal-overlay" data-close></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle">
+      <button class="modal-close" aria-label="Close">×</button>
+      <h2 id="projectModalTitle">Project Details</h2>
+      <div id="projectContent" class="project-modal-content"></div>
+      <div class="modal-actions">
+        <button class="btn" id="projectInterested">Interested in Similar Work</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal" id="quoteModal" aria-hidden="true">
     <div class="modal-overlay" data-close></div>
     <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="quoteModalTitle">

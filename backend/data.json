@@ -1,0 +1,54 @@
+{
+  "contacts": [
+    {
+      "id": 1,
+      "name": "afaf",
+      "email": "afda@gmail.com",
+      "message": "afdaf",
+      "ts": "2026-03-03T08:23:50.557Z"
+    },
+    {
+      "id": 2,
+      "name": "ray omesh",
+      "email": "rayomesh9@gmail.com",
+      "message": "hello",
+      "ts": "2026-03-04T00:59:59.173Z"
+    }
+  ],
+  "quotes": [
+    {
+      "id": 1,
+      "name": "ray",
+      "email": "omegor5@gmail.com",
+      "service": "Graphic Design",
+      "details": "fwgbwruagbreanguila",
+      "budget": "",
+      "ts": "2026-03-03T08:25:10.872Z"
+    },
+    {
+      "id": 2,
+      "name": "rrdnjnhje",
+      "email": "owfnsjkfn@kanfjkn.com",
+      "service": "Graphic Design",
+      "details": "vsbdafbfuinui",
+      "budget": "",
+      "ts": "2026-03-03T09:02:44.730Z"
+    }
+  ],
+  "logs": [
+    {
+      "id": 1,
+      "action": "CREATE",
+      "entity": "contact",
+      "details": "Created a new contact",
+      "ts": "2026-03-03T08:23:50.557Z"
+    },
+    {
+      "id": 2,
+      "action": "CREATE",
+      "entity": "quote",
+      "details": "Created a new quote",
+      "ts": "2026-03-03T08:25:10.872Z"
+    }
+  ]
+}

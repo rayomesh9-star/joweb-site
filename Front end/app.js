@@ -97,19 +97,22 @@ function handleContactSubmit(e){
 	 	 signal: AbortSignal.timeout(5000)
 	 })
 	 .then(function(res){ return res.json(); })
-	 .then(function(data){
-	 	 if(data && data.error){
-	 	 	 msg.textContent = data.error;
-	 	 } else {
-		 	 	 msg.textContent = 'Thank you, ' + name.split(' ')[0] + '! We received your message.';
-		 	 	 form.reset();
-		 	 	 // after a successful submission, refresh log data so user can see what was stored
-		 	 	 fetchLogs();
-	 	 }
-	 })
+	.then(function(data){
+		if(data && data.error){
+			msg.textContent = data.error;
+			console.warn('Contact API returned error', data.error);
+		} else {
+			msg.textContent = 'Thank you, ' + name.split(' ')[0] + '! We received your message.';
+			console.log('Contact request succeeded', data);
+			form.reset();
+			// after a successful submission, refresh log data so user can see what was stored
+			fetchLogs();
+		}
+	})
 	 .catch(function(){
-	 	 // leave previous message or silently fail if network error occurs
-	 	 console.warn('Fetch failed for contact form');
+		// display a user‑friendly error when the request cannot complete
+		console.warn('Fetch failed for contact form');
+		msg.textContent = 'Unable to send your message. Please check your connection and try again.';
 	 })
 	 .finally(function(){
 	 	 if(submit) { submit.disabled = false; submit.removeAttribute('aria-busy'); }
@@ -137,17 +140,20 @@ function handleQuoteSubmit(e){
 	 	 signal: AbortSignal.timeout(5000)
 	 })
 	 .then(function(res){ return res.json(); })
-	 .then(function(data){
-	 	 if(data && data.error){
-	 	 	 msg.textContent = data.error;
-	 	 } else {
-	 	 	 msg.innerHTML = 'Thanks, <strong>' + (name.split(' ')[0]||name) + '</strong>! We will email a quote to <em>' + email + '</em> soon.';
-	 	 	 form.reset();
-		 	 	 fetchLogs();
-	 	 }
-	 })
+	.then(function(data){
+		if(data && data.error){
+			msg.textContent = data.error;
+			console.warn('Quote API returned error', data.error);
+		} else {
+			msg.innerHTML = 'Thanks, <strong>' + (name.split(' ')[0]||name) + '</strong>! We will email a quote to <em>' + email + '</em> soon.';
+			console.log('Quote request succeeded', data);
+			form.reset();
+			fetchLogs();
+		}
+	})
 	 .catch(function(){
-	 	 console.warn('Fetch failed for quote form');
+		console.warn('Fetch failed for quote form');
+		msg.textContent = 'Unable to submit your request. Please try again later.';
 	 })
 	 .finally(function(){
 	 	 if(submit) { submit.disabled = false; submit.removeAttribute('aria-busy'); }
@@ -174,19 +180,22 @@ function handleModalQuoteSubmit(e){
 	 	 signal: AbortSignal.timeout(5000)
 	 })
 	 .then(function(res){ return res.json(); })
-	 .then(function(data){
-	 	 if(data && data.error){
-	 	 	 msg.textContent = data.error;
-	 	 } else {
-	 	 	 msg.innerHTML = 'Thanks, <strong>' + (name.split(' ')[0]||name) + '</strong>! We will email a quote to <em>' + email + '</em> soon.';
-	 	 	 form.reset();
-	 	 	 // Optionally close modal after a moment
-	 	 	 setTimeout(closeQuoteModal, 1200);
-		 	 	 fetchLogs();
-	 	 }
-	 })
+	.then(function(data){
+		if(data && data.error){
+			msg.textContent = data.error;
+			console.warn('Modal quote API returned error', data.error);
+		} else {
+			msg.innerHTML = 'Thanks, <strong>' + (name.split(' ')[0]||name) + '</strong>! We will email a quote to <em>' + email + '</em> soon.';
+			console.log('Modal quote request succeeded', data);
+			form.reset();
+			// Optionally close modal after a moment
+			setTimeout(closeQuoteModal, 1200);
+			fetchLogs();
+		}
+	})
 	 .catch(function(){
-	 	 console.warn('Fetch failed for modal quote form');
+		console.warn('Fetch failed for modal quote form');
+		msg.textContent = 'Unable to submit your request. Please try again later.';
 	 })
 	 .finally(function(){
 	 	 if(submit){ submit.disabled = false; submit.removeAttribute('aria-busy'); }
