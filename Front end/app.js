@@ -1,4 +1,32 @@
 // Basic interactivity: nav toggle and simple form handlers
+
+// Live reload - check for CSS/JS changes every 2 seconds in development
+(function() {
+	if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+		var lastCheck = {};
+		
+		function checkForUpdates() {
+			// Check main CSS file
+			var cssLink = document.querySelector('link[rel="stylesheet"][href*="style.css"]');
+			if (cssLink) {
+				fetch(cssLink.href + '?t=' + Date.now(), { method: 'HEAD' })
+					.then(res => {
+						var newTime = res.headers.get('last-modified') || Date.now();
+						if (lastCheck.css && lastCheck.css !== newTime) {
+							console.log('✓ CSS updated, refreshing page...');
+							location.reload();
+						}
+						lastCheck.css = newTime;
+					})
+					.catch(err => console.warn('CSS check failed:', err));
+			}
+		}
+		
+		// Check for updates every 2 seconds
+		setInterval(checkForUpdates, 2000);
+	}
+})();
+
 document.addEventListener('DOMContentLoaded',function(){
 	// attach nav toggles on pages
 	document.querySelectorAll('.nav-toggle').forEach(function(btn){
@@ -97,21 +125,20 @@ function handleContactSubmit(e){
 	 	 signal: AbortSignal.timeout(5000)
 	 })
 	 .then(function(res){ return res.json(); })
-	.then(function(data){
-		if(data && data.error){
-			msg.textContent = data.error;
-			console.warn('Contact API returned error', data.error);
-		} else {
-			msg.textContent = 'Thank you, ' + name.split(' ')[0] + '! We received your message.';
-			console.log('Contact request succeeded', data);
-			form.reset();
-			// after a successful submission, refresh log data so user can see what was stored
-			fetchLogs();
-		}
-	})
-	 .catch(function(){
+	 .then(function(data){
+	 	 console.log('✓ Contact form submitted successfully', data);
+	 	 if(data && data.error){
+	 	 	 msg.textContent = data.error;
+	 	 } else {
+		 	 	 	 msg.textContent = 'Thank you, ' + name.split(' ')[0] + '! We received your message.';
+		 	 	 	 form.reset();
+		 	 	 	 // after a successful submission, refresh log data so user can see what was stored
+		 	 	 	 fetchLogs();
+	 	 }
+	 })
+	 .catch(function(err){
 		// display a user‑friendly error when the request cannot complete
-		console.warn('Fetch failed for contact form');
+		console.error('✗ Contact form fetch failed:', err);
 		msg.textContent = 'Unable to send your message. Please check your connection and try again.';
 	 })
 	 .finally(function(){
@@ -140,19 +167,18 @@ function handleQuoteSubmit(e){
 	 	 signal: AbortSignal.timeout(5000)
 	 })
 	 .then(function(res){ return res.json(); })
-	.then(function(data){
-		if(data && data.error){
-			msg.textContent = data.error;
-			console.warn('Quote API returned error', data.error);
-		} else {
-			msg.innerHTML = 'Thanks, <strong>' + (name.split(' ')[0]||name) + '</strong>! We will email a quote to <em>' + email + '</em> soon.';
-			console.log('Quote request succeeded', data);
-			form.reset();
-			fetchLogs();
-		}
-	})
-	 .catch(function(){
-		console.warn('Fetch failed for quote form');
+	 .then(function(data){
+	 	 console.log('✓ Quote form submitted successfully', data);
+	 	 if(data && data.error){
+	 	 	 msg.textContent = data.error;
+	 	 } else {
+	 	 	 msg.innerHTML = 'Thanks, <strong>' + (name.split(' ')[0]||name) + '</strong>! We will email a quote to <em>' + email + '</em> soon.';
+	 	 	 form.reset();
+		 	 	 fetchLogs();
+	 	 }
+	 })
+	 .catch(function(err){
+		console.error('✗ Quote form fetch failed:', err);
 		msg.textContent = 'Unable to submit your request. Please try again later.';
 	 })
 	 .finally(function(){
@@ -180,21 +206,20 @@ function handleModalQuoteSubmit(e){
 	 	 signal: AbortSignal.timeout(5000)
 	 })
 	 .then(function(res){ return res.json(); })
-	.then(function(data){
-		if(data && data.error){
-			msg.textContent = data.error;
-			console.warn('Modal quote API returned error', data.error);
-		} else {
-			msg.innerHTML = 'Thanks, <strong>' + (name.split(' ')[0]||name) + '</strong>! We will email a quote to <em>' + email + '</em> soon.';
-			console.log('Modal quote request succeeded', data);
-			form.reset();
-			// Optionally close modal after a moment
-			setTimeout(closeQuoteModal, 1200);
-			fetchLogs();
-		}
-	})
-	 .catch(function(){
-		console.warn('Fetch failed for modal quote form');
+	 .then(function(data){
+	 	 console.log('✓ Modal quote form submitted successfully', data);
+	 	 if(data && data.error){
+	 	 	 msg.textContent = data.error;
+	 	 } else {
+	 	 	 msg.innerHTML = 'Thanks, <strong>' + (name.split(' ')[0]||name) + '</strong>! We will email a quote to <em>' + email + '</em> soon.';
+	 	 	 form.reset();
+	 	 	 // Optionally close modal after a moment
+	 	 	 setTimeout(closeQuoteModal, 1200);
+		 	 	 fetchLogs();
+	 	 }
+	 })
+	 .catch(function(err){
+		console.error('✗ Modal quote form fetch failed:', err);
 		msg.textContent = 'Unable to submit your request. Please try again later.';
 	 })
 	 .finally(function(){
@@ -232,18 +257,6 @@ function fetchLogs(){
 			console.log('Contacts:', data.contacts);
 			console.log('Quotes:', data.quotes);
 			console.groupEnd();
-			// show logs in a debug area if present
-			var dbg = document.getElementById('logData');
-			if(!dbg){
-				dbg = document.createElement('pre');
-				dbg.id = 'logData';
-				dbg.style.background = '#f0f0f0';
-				dbg.style.padding = '10px';
-				dbg.style.margin = '20px';
-				dbg.style.overflowX = 'auto';
-				document.body.appendChild(dbg);
-			}
-			dbg.textContent = JSON.stringify(data, null, 2);
 		})
 		.catch(err => {
 			console.warn('Unable to fetch logs', err);

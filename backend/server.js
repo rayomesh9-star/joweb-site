@@ -9,8 +9,8 @@ const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 // PUBLIC_HOST is only used for logging/URLs. Set it to the public hostname you
 // want displayed (e.g. 'www.joewebgraphics.com').
-// default to full domain so logs/readme reflect desired address.
-const PUBLIC_HOST = process.env.PUBLIC_HOST || 'joewebgraphics';
+// default to localhost so forms work without hosts file configuration
+const PUBLIC_HOST = process.env.PUBLIC_HOST || 'localhost';
 
 app.use(express.json());
 
@@ -389,7 +389,7 @@ async function start() {
     }
   }
   const server = app.listen(PORT, HOST, () => {
-    console.log(`Backend server listening on http://joewebgraphics:${PORT}`);
+    console.log(`Backend server listening on http://${PUBLIC_HOST}:${PORT}`);
   });
   server.on('error', (err) => {
     console.error('Server error:', err);
