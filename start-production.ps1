@@ -19,5 +19,4 @@ Write-Host ""
 
 Set-Location "$PSScriptRoot\backend"
 # build a path variable and use it when launching the server
-$serverPath = Join-Path $PWD 'server.js'
-node $serverPath
+node (Join-Path $PWD 'server.js')

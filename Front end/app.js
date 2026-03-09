@@ -136,14 +136,14 @@ function handleContactSubmit(e){
 		 	 	 	 fetchLogs();
 	 	 }
 	 })
-	 .catch(function(err){
+	 //.catch(function(err){
 		// display a user‑friendly error when the request cannot complete
-		console.error('✗ Contact form fetch failed:', err);
-		msg.textContent = 'Unable to send your message. Please check your connection and try again.';
-	 })
-	 .finally(function(){
-	 	 if(submit) { submit.disabled = false; submit.removeAttribute('aria-busy'); }
-	 });
+		//console.error('✗ Contact form fetch failed:', err);
+		//msg.textContent = 'Unable to send your message. Please check your connection and try again.';
+	 //})
+	 //.finally(function(){
+	 	// if(submit) { submit.disabled = false; submit.removeAttribute('aria-busy'); }
+	 //});
 }
 
 function handleQuoteSubmit(e){
