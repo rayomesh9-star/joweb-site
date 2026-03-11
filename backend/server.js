@@ -3,20 +3,21 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000; // Changed from 3000 to 4000
 // Bind host for the Express server. Set HOST to the hostname/interface to bind to
 // (e.g. '0.0.0.0' or '127.0.0.1').
 const HOST = process.env.HOST || '0.0.0.0';
 // PUBLIC_HOST is only used for logging/URLs. Set it to the public hostname you
 // want displayed (e.g. 'www.joewebgraphics.com').
 // default to localhost so forms work without hosts file configuration
-const PUBLIC_HOST = process.env.PUBLIC_HOST || 'localhost';
+const PUBLIC_HOST = process.env.PUBLIC_HOST || 'www.joewebgraphics.com';
 
 app.use(express.json());
 
 // Serve static front-end files from the Front end folder
 const staticDir = path.join(__dirname, '../Front end');
 app.use(express.static(staticDir));
+console.log(`Serving static files from ${staticDir}`);
 
 // Helpers to append entries to log files (non-blocking)
 function appendEntry(file, entry) {
@@ -37,39 +38,47 @@ try {
   dbModule = null;
 }
 
-// Contact endpoint - respond immediately, write async
+// Enhanced validation for Contact endpoint
 app.post('/api/contact', (req, res) => {
   const { name, email, message } = req.body;
   if (!name || !email || !message) {
-    return res.status(400).json({ error: 'Name, email and message are required.' });
+    console.error('Invalid contact input:', req.body);
+    return res.status(400).json({ error: 'Name, email, and message are required.' });
   }
   // Respond immediately
-  res.json({ status: 'ok' });
+  res.json({ status: 'ok', message: 'Contact submission successful.' });
   // Write to file in background (non-blocking)
   const entry = { name, email, message, ts: new Date().toISOString() };
   appendEntry(path.join(__dirname, 'contacts.log'), entry);
   // Also insert into persistent store if available
   if (dbModule && dbModule.insertContact) {
-    try { dbModule.insertContact({ name: entry.name, email: entry.email, message: entry.message, ts: entry.ts }); }
-    catch (err) { console.error('DB insertContact failed', err); }
+    try {
+      dbModule.insertContact(entry);
+    } catch (err) {
+      console.error('DB insertContact failed', err);
+    }
   }
 });
 
-// Quote endpoint - respond immediately, write async
+// Enhanced validation for Quote endpoint
 app.post('/api/quote', (req, res) => {
   const { name, email, service, details, budget } = req.body;
   if (!name || !email) {
+    console.error('Invalid quote input:', req.body);
     return res.status(400).json({ error: 'Name and email are required.' });
   }
   // Respond immediately
-  res.json({ status: 'ok' });
+  res.json({ status: 'ok', message: 'Quote submission successful.' });
   // Write to file in background (non-blocking)
   const entry = { name, email, service, details, budget, ts: new Date().toISOString() };
   appendEntry(path.join(__dirname, 'quotes.log'), entry);
   // Also insert into persistent store if available
   if (dbModule && dbModule.insertQuote) {
-    try { dbModule.insertQuote({ name: entry.name, email: entry.email, service: entry.service, details: entry.details, budget: entry.budget, ts: entry.ts }); }
-    catch (err) { console.error('DB insertQuote failed', err); }
+    try {
+      dbModule.insertQuote(entry);
+    } catch (err) {
+      console.error('DB insertQuote failed', err);
+    }
   }
 });
 
@@ -390,6 +399,7 @@ async function start() {
   }
   const server = app.listen(PORT, HOST, () => {
     console.log(`Backend server listening on http://${PUBLIC_HOST}:${PORT}`);
+    console.log(`Server is running on http://${HOST}:${PORT}`);
   });
   server.on('error', (err) => {
     console.error('Server error:', err);
@@ -400,10 +410,10 @@ start().catch(err => console.error('Start error:', err));
 
 // notify on unexpected process events so they show up in logs
 process.on('uncaughtException', (err) => {
-  console.error('uncaughtException', err);
+  console.error('Uncaught Exception:', err);
 });
-process.on('unhandledRejection', (reason) => {
-  console.error('unhandledRejection', reason);
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 process.on('exit', (code) => {
   console.log('process exiting with code', code);

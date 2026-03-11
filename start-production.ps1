@@ -2,7 +2,7 @@
 # Start the backend in production mode with www.joewebgraphics.com
 
 Write-Host "🚀 Starting Joeweb Graphics PRODUCTION server..."
-Write-Host "Domain: www.joewebgraphics.com:3000"
+Write-Host "Domain: www.joewebgraphics.com"
 Write-Host ""
 
 # Kill any existing node processes
@@ -17,6 +17,8 @@ Write-Host "Starting Node.js server..."
 Write-Host "Press Ctrl+C to stop the server"
 Write-Host ""
 
-Set-Location "$PSScriptRoot\backend"
-# build a path variable and use it when launching the server
-node (Join-Path $PWD 'server.js')
+# Navigate to the backend directory before starting the server
+Set-Location -Path "C:\Users\Administrator\Joweb-webites\backend"
+
+# Start the server
+node server.js
