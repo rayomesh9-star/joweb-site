@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 # Start the backend in production mode with www.joewebgraphics.com
 
-Write-Host "🚀 Starting Joeweb Graphics PRODUCTION server..."
+Write-Host "🚀 Starting Joweb PRODUCTION server..."
 Write-Host "Domain: www.joewebgraphics.com"
 Write-Host ""
 

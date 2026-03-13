@@ -136,14 +136,14 @@ function handleContactSubmit(e){
 		 	 	 	 fetchLogs();
 	 	 }
 	 })
-	 //.catch(function(err){
-		// display a user‑friendly error when the request cannot complete
-		//console.error('✗ Contact form fetch failed:', err);
-		//msg.textContent = 'Unable to send your message. Please check your connection and try again.';
-	 //})
-	 //.finally(function(){
-	 	// if(submit) { submit.disabled = false; submit.removeAttribute('aria-busy'); }
-	 //});
+	 .catch(function(err){
+		// display a user-friendly error when the request cannot complete
+		console.error('✗ Contact form fetch failed:', err);
+		msg.textContent = 'Unable to send your message. Please check your connection and try again.';
+	 })
+	 .finally(function(){
+		if(submit) { submit.disabled = false; submit.removeAttribute('aria-busy'); }
+	 });
 }
 
 function handleQuoteSubmit(e){
@@ -252,7 +252,7 @@ function fetchLogs(){
 	fetch('/api/logs')
 		.then(res => res.json())
 		.then(data => {
-			// simply log to console; could be enhanced to show in UI
+			// simply log to console for backend verification
 			console.group('Server logs');
 			console.log('Contacts:', data.contacts);
 			console.log('Quotes:', data.quotes);

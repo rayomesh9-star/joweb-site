@@ -180,7 +180,7 @@ app.get('/admin/logs', (req, res) => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard — Joeweb Graphics</title>
+  <title>Admin Dashboard — Joweb</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -338,7 +338,8 @@ app.get('/admin/logs', (req, res) => {
         } else {
           data.contacts.forEach(c => {
             const row = contactsBody.insertRow();
-            row.innerHTML = \`<td>\${c.name}</td><td>\${c.email}</td><td>\${c.message.substring(0, 100)}\${c.message.length > 100 ? '...' : ''}</td><td>\${new Date(c.ts).toLocaleString()}</td>\`;
+            const message = c.message || '';
+            row.innerHTML = \`<td>\${c.name}</td><td>\${c.email}</td><td>\${message.substring(0, 100)}\${message.length > 100 ? '...' : ''}</td><td>\${new Date(c.ts).toLocaleString()}</td>\`;
           });
         }
         
