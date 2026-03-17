@@ -187,7 +187,7 @@ app.get('/api/logs/export/quotes', async (req, res) => {
 });
 
 // Admin dashboard: GET /admin/logs - serve a simple HTML dashboard
-app.get('/admin/logs', (req, res) => {
+app.get('/admin/logs', async (req, res) => {
   const html = `
 <!DOCTYPE html>
 <html lang="en">
