@@ -1,4 +1,11 @@
 {
+  "company": {
+    "name": "Joweb",
+    "tagline": "Design • Logistics • Printing",
+    "address": "Nairobi, Kenya",
+    "email": "info@joweb.co.ke",
+    "phone": "+254 700 000 000"
+  },
   "contacts": [
     {
       "id": 1,
@@ -76,6 +83,20 @@
       "email": "onegor6@gmail.com",
       "message": "I want my photos to be changef",
       "ts": "2026-03-13T03:26:35.971Z"
+    },
+    {
+      "id": 12,
+      "name": "ray",
+      "email": "omegor6@gmail.com",
+      "message": "i want",
+      "ts": "2026-03-14T01:17:26.621Z"
+    },
+    {
+      "id": 13,
+      "name": "Ray",
+      "email": "omegor6@gmail.com",
+      "message": "I really enjoy this services great works keep up",
+      "ts": "2026-03-14T03:14:57.596Z"
     }
   ],
   "quotes": [
@@ -105,6 +126,15 @@
       "details": "adsa",
       "budget": "",
       "ts": "2026-03-12T13:42:45.814Z"
+    },
+    {
+      "id": 4,
+      "name": "RK",
+      "email": "ruthkimani387@gmail.com",
+      "service": "Printing & Branding",
+      "details": "10000 A6 FLIERS",
+      "budget": "",
+      "ts": "2026-03-13T08:07:00.948Z"
     }
   ],
   "logs": [

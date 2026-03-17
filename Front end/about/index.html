@@ -10,6 +10,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       document.body.classList.add('page-fade-in');
+      fetchCompanyInfo();
     });
 </script>
   <script src="about.js"></script>
@@ -68,6 +69,7 @@
         <div class="footer-col footer-about">
             <a class="brand" href="../index.html"><img src="../images/Joweb Logo.png" alt="Joweb Logo" style="height:50px"></a>
             <p>Joweb • Design • Logistics • Printing</p>
+					<div id="companyInfo"><p class="company-address">Loading...</p></div>
           </div>
           <div class="footer-col footer-links">
             <h4>Quick Links</h4>

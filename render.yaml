@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: joweb-site
+    env: node
+    region: oregon
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node server.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: PUBLIC_HOST
+        value: joweb-site.onrender.com

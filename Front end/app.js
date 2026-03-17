@@ -262,3 +262,22 @@ function fetchLogs(){
 			console.warn('Unable to fetch logs', err);
 		});
 }
+
+// fetch and display company info in footer
+function fetchCompanyInfo(){
+	const companyInfo = document.getElementById('companyInfo');
+	if (!companyInfo) return;
+	
+	fetch('/api/company')
+		.then(res => res.json())
+		.then(data => {
+			companyInfo.innerHTML = `
+				<p class="company-address">📍 ${data.address || ''}</p>
+				<p class="company-email">✉️ ${data.email || ''}</p>
+				<p class="company-phone">📞 ${data.phone || ''}</p>
+			`;
+		})
+		.catch(err => {
+			companyInfo.innerHTML = '<p class="company-address">Nairobi, Kenya</p>';
+		});
+}

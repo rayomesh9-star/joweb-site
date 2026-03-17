@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-const PORT = process.env.PORT || 4000; // Changed from 3000 to 4000
+const PORT = process.env.PORT || 80; // Changed from 3000 to 4000
 // Bind host for the Express server. Set HOST to the hostname/interface to bind to
 // (e.g. '0.0.0.0' or '127.0.0.1').
 const HOST = process.env.HOST || '0.0.0.0';
@@ -80,6 +80,20 @@ app.post('/api/quote', (req, res) => {
       console.error('DB insertQuote failed', err);
     }
   }
+});
+
+// Public endpoint: GET /api/company - return company info for footer
+app.get('/api/company', (req, res) => {
+  const dataFile = path.join(__dirname, 'data.json');
+  let data;
+  try {
+    data = JSON.parse(fs.readFileSync(dataFile, 'utf8'));
+  } catch (err) {
+    console.error('Failed to read data file', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+  const company = data.company || { name: 'Joweb', tagline: 'Design • Logistics • Printing', address: 'Nairobi, Kenya', email: 'info@joweb.co.ke', phone: '+254 700 000 000' };
+  res.json(company);
 });
 
 // Admin endpoint: GET /api/logs - return contacts and quotes as JSON
