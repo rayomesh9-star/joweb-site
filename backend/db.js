@@ -1,68 +1,75 @@
-// Simple JSON-based data store
-// Data is saved to data.json on disk for persistence
-const fs = require('fs');
-const path = require('path');
+// PostgreSQL-based data store
+const { Pool } = require('pg');
 
-const dbPath = path.join(__dirname, 'data.json');
+// Create connection pool - uses environment variables or defaults
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL || 
+    'postgresql://postgres:postgres@localhost:5432/joweb',
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+});
 
-let data = {
-  contacts: [],
-  quotes: []
-};
+let isInitialized = false;
 
-// Load data from file if it exists
-function load() {
-  if (fs.existsSync(dbPath)) {
-    try {
-      const fileContent = fs.readFileSync(dbPath, 'utf-8');
-      data = JSON.parse(fileContent);
-    } catch (err) {
-      console.warn('Failed to load data.json:', err.message);
-    }
-  }
-}
-
-// Save data to file
-function save() {
-  try {
-    fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
-  } catch (err) {
-    console.error('Failed to save data:', err);
-  }
-}
-
-// Initialize (async but non-blocking)
+// Initialize database tables
 async function init() {
-  load();
-  console.log('Data store initialized');
+  if (isInitialized) return;
+  
+  try {
+    // Create contacts table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS contacts (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        message TEXT,
+        ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    
+    // Create quotes table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS quotes (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        service VARCHAR(255),
+        details TEXT,
+        budget VARCHAR(100),
+        ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    
+    isInitialized = true;
+    console.log('PostgreSQL database initialized');
+  } catch (err) {
+    console.error('Database initialization error:', err.message);
+  }
 }
 
-function insertContact(entry) {
-  const contact = {
-    id: data.contacts.length + 1,
-    ...entry
-  };
-  data.contacts.push(contact);
-  save();
-  return contact;
+async function insertContact(entry) {
+  const result = await pool.query(
+    'INSERT INTO contacts (name, email, message) VALUES ($1, $2, $3) RETURNING *',
+    [entry.name, entry.email, entry.message]
+  );
+  return result.rows[0];
 }
 
-function insertQuote(entry) {
-  const quote = {
-    id: data.quotes.length + 1,
-    ...entry
-  };
-  data.quotes.push(quote);
-  save();
-  return quote;
+async function insertQuote(entry) {
+  const result = await pool.query(
+    'INSERT INTO quotes (name, email, service, details, budget) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+    [entry.name, entry.email, entry.service, entry.details, entry.budget || '']
+  );
+  return result.rows[0];
 }
 
-function getContacts() {
-  return data.contacts.slice().reverse();  // most recent first
+async function getContacts() {
+  const result = await pool.query('SELECT * FROM contacts ORDER BY id DESC');
+  return result.rows;
 }
 
-function getQuotes() {
-  return data.quotes.slice().reverse();  // most recent first
+async function getQuotes() {
+  const result = await pool.query('SELECT * FROM quotes ORDER BY id DESC');
+  return result.rows;
 }
 
 module.exports = {

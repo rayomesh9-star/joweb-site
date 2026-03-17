@@ -53,7 +53,7 @@ app.post('/api/contact', (req, res) => {
   // Also insert into persistent store if available
   if (dbModule && dbModule.insertContact) {
     try {
-      dbModule.insertContact(entry);
+      dbModule.insertContact(entry).catch(err => console.error('DB insertContact failed', err));
     } catch (err) {
       console.error('DB insertContact failed', err);
     }
@@ -75,7 +75,7 @@ app.post('/api/quote', (req, res) => {
   // Also insert into persistent store if available
   if (dbModule && dbModule.insertQuote) {
     try {
-      dbModule.insertQuote(entry);
+      dbModule.insertQuote(entry).catch(err => console.error('DB insertQuote failed', err));
     } catch (err) {
       console.error('DB insertQuote failed', err);
     }
@@ -97,12 +97,12 @@ app.get('/api/company', (req, res) => {
 });
 
 // Admin endpoint: GET /api/logs - return contacts and quotes as JSON
-app.get('/api/logs', (req, res) => {
+app.get('/api/logs', async (req, res) => {
   // Prefer the persistent store if available
   if (dbModule && dbModule.getContacts && dbModule.getQuotes) {
     try {
-      const contacts = dbModule.getContacts();
-      const quotes = dbModule.getQuotes();
+      const contacts = await dbModule.getContacts();
+      const quotes = await dbModule.getQuotes();
       return res.json({ contacts, quotes, total: { contacts: contacts.length, quotes: quotes.length } });
     } catch (err) {
       console.error('DB read failed', err);
@@ -133,10 +133,10 @@ app.get('/api/logs', (req, res) => {
 });
 
 // Admin endpoint: GET /api/logs/export/contacts - download contacts as CSV
-app.get('/api/logs/export/contacts', (req, res) => {
+app.get('/api/logs/export/contacts', async (req, res) => {
   let entries = [];
   if (dbModule && dbModule.getContacts) {
-    try { entries = dbModule.getContacts(); }
+    try { entries = await dbModule.getContacts(); }
     catch (err) { console.error('DB getContacts failed', err); entries = []; }
   }
   if (entries.length === 0) {
@@ -160,10 +160,10 @@ app.get('/api/logs/export/contacts', (req, res) => {
 });
 
 // Admin endpoint: GET /api/logs/export/quotes - download quotes as CSV
-app.get('/api/logs/export/quotes', (req, res) => {
+app.get('/api/logs/export/quotes', async (req, res) => {
   let entries = [];
   if (dbModule && dbModule.getQuotes) {
-    try { entries = dbModule.getQuotes(); }
+    try { entries = await dbModule.getQuotes(); }
     catch (err) { console.error('DB getQuotes failed', err); entries = []; }
   }
   if (entries.length === 0) {
