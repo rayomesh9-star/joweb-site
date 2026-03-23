@@ -2,9 +2,9 @@
 
 .service {
 	background: var(--card-bg);
-	padding: 1.15rem;
+	padding: 1.5rem;
 	border-radius: 12px;
-	min-height: 140px;
+	min-height: 300px;
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
@@ -24,24 +24,59 @@
 .service h2,
 .service h3 {
 	margin-top: 0;
+	margin-bottom: 0.5rem;
 	color: var(--purple-1);
+	font-size: 1.1rem;
+	line-height: 1.3;
+}
+
+.service .portfolio-image {
+	width: 100%;
+	height: 140px;
+	object-fit: cover;
+	border-radius: 8px;
+	margin-bottom: 1rem;
 }
 
 .service p,
 .service ul {
 	color: var(--text-dark);
+	font-size: 0.9rem;
 }
 
-.service ul {
-	padding-left: 1.5rem;
+.service p {
 	margin: 0.5rem 0;
 }
 
+.service ul {
+	padding-left: 1.2rem;
+	margin: 0.5rem 0;
+	flex-grow: 1;
+}
+
 .service li {
-	margin: 0.3rem 0;
+	margin: 0.25rem 0;
+}
+
+.service strong {
+	color: var(--purple-1);
+}
+
+.services-bundles .services-grid {
+	grid-template-columns: repeat(3, 1fr);
+	gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+	.services-bundles .services-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
 }
 
 @media (max-width: 600px) {
+	.services-bundles .services-grid {
+		grid-template-columns: 1fr;
+	}
 	.service {
 		min-height: auto;
 	}
